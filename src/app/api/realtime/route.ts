@@ -1,29 +1,38 @@
 import { NextRequest } from 'next/server'
-import { isApiAuthenticated } from '@/lib/api-auth'
 
 // ============================================
 // SERVER-SENT EVENTS (SSE) FOR REAL-TIME PUSH
+// ⚠️ NOTE: SSE doesn't work well on Vercel serverless
+// This endpoint is kept for self-hosted deployments
+// For Vercel, the smart polling handles updates
 // ============================================
 
-// Store connected clients
+// Check if running on Vercel (serverless)
+const isVercel = process.env.VERCEL === '1'
+
+// Store connected clients (only works in single-instance deployments)
 const clients = new Set<WritableStreamDefaultWriter>()
-
-// Event queue for each client (in case they miss events)
-const eventQueue = new Map<WritableStreamDefaultWriter, any[]>()
-const MAX_QUEUE_SIZE = 10
-
-// Track active connections count
 let connectionCount = 0
 
 export async function GET(request: NextRequest) {
-  // Create a TransformStream for SSE
+  // On Vercel, return a simple status instead of SSE
+  // This prevents connection timeout errors
+  if (isVercel) {
+    return new Response(JSON.stringify({
+      success: true,
+      message: 'SSE not available on Vercel. Use smart polling.',
+      alternative: 'Conditional requests on /api/shop-data are recommended.'
+    }), {
+      headers: { 'Content-Type': 'application/json' }
+    })
+  }
+
+  // Create a TransformStream for SSE (only for non-Vercel deployments)
   const stream = new TransformStream()
   const writer = stream.writable.getWriter()
 
-  // Register this client
   clients.add(writer)
   connectionCount++
-  eventQueue.set(writer, [])
 
   console.log(`[RealTime] Client connected. Total: ${connectionCount}`)
 
@@ -70,6 +79,11 @@ export async function GET(request: NextRequest) {
 
 // Broadcast to all connected clients
 export async function broadcast(event: any) {
+  // On Vercel, broadcasting is not available
+  if (isVercel) {
+    return
+  }
+
   const encoder = new TextEncoder()
   const message = `data: ${JSON.stringify(event)}\n\n`
 
@@ -79,7 +93,6 @@ export async function broadcast(event: any) {
     try {
       await client.write(encoder.encode(message))
     } catch {
-      // Client is dead, mark for removal
       deadClients.push(client)
     }
   }
@@ -87,7 +100,6 @@ export async function broadcast(event: any) {
   // Clean up dead clients
   deadClients.forEach(client => {
     clients.delete(client)
-    eventQueue.delete(client)
     connectionCount--
   })
 
@@ -135,7 +147,7 @@ export async function broadcastNewReview(productId: number, review: any) {
   })
 }
 
-// Broadcast cache invalidation (when static data changes)
+// Broadcast cache invalidation
 export async function broadcastCacheInvalidate(keys: string[]) {
   await broadcast({
     type: 'CACHE_INVALIDATE',
@@ -171,7 +183,7 @@ export function getConnectionStats() {
   }
 }
 
-// Clean up function for graceful shutdown
+// Clean up function
 export function cleanup() {
   for (const client of clients) {
     try {
@@ -179,6 +191,5 @@ export function cleanup() {
     } catch {}
   }
   clients.clear()
-  eventQueue.clear()
   connectionCount = 0
 }

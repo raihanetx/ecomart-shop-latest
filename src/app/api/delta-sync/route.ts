@@ -2,14 +2,31 @@ import { NextRequest } from 'next/server'
 
 // ============================================
 // DELTA SYNC - Server-Sent Events Endpoint
-// Server pushes ONLY changes - NO polling needed!
+// ⚠️ NOTE: SSE doesn't work well on Vercel serverless
+// This endpoint is kept for self-hosted deployments
+// For Vercel, the smart polling in useShopStore handles updates
 // ============================================
 
-// Store connected clients
+// Store connected clients (only works in single-instance deployments)
 const clients = new Set<WritableStreamDefaultWriter>()
 let connectionCount = 0
 
+// Check if running on Vercel (serverless)
+const isVercel = process.env.VERCEL === '1'
+
 export async function GET(request: NextRequest) {
+  // On Vercel, return a simple status instead of SSE
+  // This prevents connection timeout errors
+  if (isVercel) {
+    return new Response(JSON.stringify({
+      success: true,
+      message: 'SSE not available on Vercel. Use smart polling.',
+      alternative: 'Conditional requests on /api/shop-data are recommended.'
+    }), {
+      headers: { 'Content-Type': 'application/json' }
+    })
+  }
+
   const stream = new TransformStream()
   const writer = stream.writable.getWriter()
 
