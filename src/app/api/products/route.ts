@@ -5,7 +5,6 @@ import { eq, and, sql, inArray } from 'drizzle-orm'
 import { isApiAuthenticated, authErrorResponse } from '@/lib/api-auth'
 import { initializeDatabase, isDatabaseReady } from '@/lib/auto-init'
 import { internalError, validationError, notFoundError } from '@/lib/api-errors'
-import { broadcastProductCreated, broadcastProductUpdated, broadcastProductDeleted } from '@/app/api/delta-sync/route'
 
 // Helper function to parse discount string
 function parseDiscount(discountStr: string | null): { discountType: 'pct' | 'fixed'; discountValue: number } {
@@ -187,13 +186,12 @@ export async function POST(request: NextRequest) {
     // Clear shop data cache so frontend shows new product immediately
     clearShopDataCache()
     
-    // DELTA SYNC: Send the actual new product to all connected clients
-    await broadcastProductCreated(newProduct[0])
-
-    // Return created product
+    // Return created product with refresh hint
+    // Frontend smart polling will pick up the change
     return NextResponse.json({
       success: true,
-      data: newProduct[0]
+      data: newProduct[0],
+      _refresh: true // Hint for frontend to refresh
     }, { status: 201 })
   } catch (error) {
     return internalError('PRODUCTS_POST', error)
@@ -258,12 +256,11 @@ export async function PUT(request: NextRequest) {
     // Clear shop data cache so frontend shows updated product immediately
     clearShopDataCache()
     
-    // DELTA SYNC: Send the updated product to all connected clients
-    await broadcastProductUpdated(updated[0])
-    
+    // Return updated product with refresh hint
     return NextResponse.json({
       success: true,
-      data: updated[0]
+      data: updated[0],
+      _refresh: true // Hint for frontend to refresh
     })
   } catch (error) {
     // Error logged by internalError
@@ -327,13 +324,13 @@ export async function DELETE(request: NextRequest) {
     // Clear shop data cache so frontend updates immediately
     clearShopDataCache()
     
-    // DELTA SYNC: Tell clients this product was deleted
-    await broadcastProductDeleted(productId)
-    
+    // Return with deleted ID for frontend to update locally
     return NextResponse.json({
       success: true,
       message: 'Product deleted successfully',
-      data: deleted[0]
+      data: deleted[0],
+      _deletedId: productId, // Frontend can remove this locally
+      _refresh: true
     })
   } catch (error) {
     // Error logged by internalError
@@ -390,12 +387,10 @@ export async function PATCH(request: NextRequest) {
     // Clear shop data cache so frontend updates immediately
     clearShopDataCache()
     
-    // DELTA SYNC: Send the updated product status to all connected clients
-    await broadcastProductUpdated(updated[0])
-    
     return NextResponse.json({
       success: true,
-      data: updated[0]
+      data: updated[0],
+      _refresh: true
     })
   } catch (error) {
     // Error logged by internalError

@@ -5,7 +5,6 @@ import { eq, sql, and, inArray } from 'drizzle-orm'
 import { isApiAuthenticated, authErrorResponse } from '@/lib/api-auth'
 import { checkRateLimit, rateLimitErrorResponse } from '@/lib/validation'
 import { checkHoneypot, detectBot } from '@/lib/bot-detection'
-import { broadcastOrderCreated, broadcastOrderStatusChanged, broadcastStockChanged } from '@/app/api/delta-sync/route'
 
 // Steadfast Courier configuration
 const STEADFAST_BASE_URL = 'https://portal.packzy.com/api/v1'
@@ -361,23 +360,12 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    // DELTA SYNC: Push the new order to all connected clients (Admin dashboard)
-    await broadcastOrderCreated(newOrder[0])
-    
-    // Also notify about stock changes for the ordered items
-    for (const item of (body.items || [])) {
-      if (item.productId && item.variant) {
-        // Stock was decremented, push update
-        const variantRecord = variantLookup.get(`${item.productId}-${item.variant}`)
-        if (variantRecord) {
-          await broadcastStockChanged(item.productId, variantRecord.stock - item.qty, variantRecord.id)
-        }
-      }
-    }
-    
+    // Return the new order - frontend smart polling will pick it up
+    // Smart polling: 5 sec when active, instant on window focus
     return NextResponse.json({
       success: true,
-      data: newOrder[0]
+      data: newOrder[0],
+      _refresh: true // Hint for frontend
     }, { status: 201 })
   } catch (error) {
     console.error('Error creating order:', error)
@@ -584,14 +572,11 @@ export async function PATCH(request: NextRequest) {
       .where(eq(orders.id, id))
       .returning()
     
-    // DELTA SYNC: Push order status change to all connected clients
-    if (status) {
-      await broadcastOrderStatusChanged(id, status, updateData.courierStatus)
-    }
-    
+    // Return updated order - frontend smart polling will pick it up
     return NextResponse.json({
       success: true,
-      data: updated[0]
+      data: updated[0],
+      _refresh: true
     })
   } catch (error) {
     console.error('Error updating order:', error)
