@@ -32,9 +32,9 @@ export const fadeIn: Variants = {
 }
 
 export const fadeInUp: Variants = {
-  initial: { opacity: 0, y: 20 },
+  initial: { opacity: 0, y: 10 },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -10 },
+  exit: { opacity: 0, y: -5 },
 }
 
 export const fadeInDown: Variants = {
@@ -87,18 +87,18 @@ export const popIn: Variants = {
 
 // === CART SPECIFIC ANIMATIONS ===
 export const cartItemAdd: Variants = {
-  initial: { opacity: 0, x: 50, scale: 0.8 },
+  initial: { opacity: 0, x: 20, scale: 0.95 },
   animate: { 
     opacity: 1, 
     x: 0, 
     scale: 1,
-    transition: { type: 'spring', stiffness: 400, damping: 25 }
+    transition: { duration: 0.15 }
   },
   exit: { 
     opacity: 0, 
-    x: -50, 
-    scale: 0.8,
-    transition: { duration: 0.2 }
+    x: -20, 
+    scale: 0.95,
+    transition: { duration: 0.1 }
   },
 }
 
@@ -202,29 +202,29 @@ export const staggerContainer: Variants = {
   initial: {},
   animate: {
     transition: {
-      staggerChildren: 0.05,
-      delayChildren: 0.1,
+      staggerChildren: 0.02, // Faster stagger
+      delayChildren: 0.02, // Minimal delay
     }
   },
   exit: {
     transition: {
-      staggerChildren: 0.03,
+      staggerChildren: 0.02,
       staggerDirection: -1,
     }
   },
 }
 
 export const staggerItem: Variants = {
-  initial: { opacity: 0, y: 20 },
+  initial: { opacity: 0, y: 10 }, // Smaller y offset
   animate: { 
     opacity: 1, 
     y: 0,
-    transition: { type: 'spring', stiffness: 300, damping: 24 }
+    transition: { duration: 0.15 } // Faster transition
   },
   exit: { 
     opacity: 0, 
-    y: -10,
-    transition: { duration: 0.15 }
+    y: -5,
+    transition: { duration: 0.1 }
   },
 }
 

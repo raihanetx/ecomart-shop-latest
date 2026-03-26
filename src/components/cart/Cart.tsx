@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { CartItem, ViewType } from '@/types'
 import { roundPrice } from '@/lib/utils'
-import { cartItemAdd, cartItemRemove, staggerContainer, staggerItem, fadeInUp, buttonTap, counterChange } from '@/lib/animations'
+import { cartItemAdd, staggerContainer, staggerItem, fadeInUp, buttonTap, counterChange } from '@/lib/animations'
 
 // Maximum quantity per item in cart
 const MAX_QUANTITY = 10
@@ -53,21 +53,21 @@ export default function Cart({ setView, cartItems, setCartItems, onUpdateQuantit
         className="cart-clean-wrapper"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.1 }}
       >
         <div className="cart-clean-container">
           <motion.div 
             className="cart-clean-empty"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.4 }}
+            transition={{ duration: 0.15 }}
           >
             <motion.i 
               className="ri-shopping-cart-2-line" 
               style={{ fontSize: '64px', color: '#d1d5db', display: 'block', marginBottom: '16px' }}
-              initial={{ scale: 0.5, rotate: -10 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
             />
             <h2 style={{ fontSize: '20px', fontWeight: 600, color: '#111', marginBottom: '8px', fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif" }}>
               আপনার কার্ট খালি
@@ -77,8 +77,8 @@ export default function Cart({ setView, cartItems, setCartItems, onUpdateQuantit
             </p>
             <motion.button 
               onClick={() => setView('shop')}
-              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.1 }}
               style={{
                 padding: '12px 24px',
                 background: '#16a34a',
@@ -108,7 +108,7 @@ export default function Cart({ setView, cartItems, setCartItems, onUpdateQuantit
       className="cart-clean-wrapper"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0.1 }}
     >
       <div className="cart-clean-container">
         
@@ -139,8 +139,8 @@ export default function Cart({ setView, cartItems, setCartItems, onUpdateQuantit
                     src={item.img} 
                     className="cart-clean-img" 
                     alt={item.name}
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ duration: 0.2 }}
+                    whileHover={{ scale: 1.03 }}
+                    transition={{ duration: 0.1 }}
                   />
                   <div className="cart-clean-info">
                     <div className="cart-clean-name-row">
@@ -171,7 +171,7 @@ export default function Cart({ setView, cartItems, setCartItems, onUpdateQuantit
                         <motion.span 
                           className="cart-clean-qval"
                           key={currentQty}
-                          initial={{ opacity: 0.5, scale: 0.8 }}
+                          initial={{ opacity: 0.5, scale: 0.9 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ type: 'spring', stiffness: 500, damping: 20 }}
                         >
@@ -193,9 +193,8 @@ export default function Cart({ setView, cartItems, setCartItems, onUpdateQuantit
                   <motion.button 
                     className="cart-clean-del" 
                     onClick={() => handleRemoveItem(index)}
-                    whileHover={{ scale: 1.1, color: '#ef4444' }}
                     whileTap={{ scale: 0.9 }}
-                    transition={{ duration: 0.15 }}
+                    transition={{ duration: 0.1 }}
                   >
                     <i className="ri-delete-bin-line"></i>
                   </motion.button>
@@ -205,12 +204,12 @@ export default function Cart({ setView, cartItems, setCartItems, onUpdateQuantit
           </AnimatePresence>
         </motion.div>
 
-        {/* SUMMARY */}
+        {/* SUMMARY - NO DELAY */}
         <motion.div 
           className="cart-clean-summary"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          transition={{ duration: 0.15 }}
         >
           <div className="cart-clean-os-row">
             <span>Subtotal ({totalItems} items)</span>
@@ -218,7 +217,7 @@ export default function Cart({ setView, cartItems, setCartItems, onUpdateQuantit
               key={subtotal}
               initial={{ opacity: 0.5 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.1 }}
             >
               TK {roundPrice(subtotal)}
             </motion.span>
@@ -231,7 +230,7 @@ export default function Cart({ setView, cartItems, setCartItems, onUpdateQuantit
             <span>Total</span>
             <motion.span
               key={subtotal}
-              initial={{ scale: 0.95 }}
+              initial={{ scale: 0.98 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 400, damping: 20 }}
             >
@@ -240,37 +239,37 @@ export default function Cart({ setView, cartItems, setCartItems, onUpdateQuantit
           </div>
         </motion.div>
 
-        {/* BUTTONS */}
+        {/* BUTTONS - NO DELAY */}
         <motion.div 
           className="cart-two-buttons"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ duration: 0.15 }}
         >
           <motion.button 
             className="cart-btn-continue-full" 
             onClick={() => setView('shop')}
-            whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
+            transition={{ duration: 0.1 }}
           >
             <i className="ri-shopping-bag-line" style={{ marginRight: '8px' }}></i> Shopping
           </motion.button>
           <motion.button 
             className="cart-btn-checkout-full" 
             onClick={() => setView('checkout')}
-            whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
+            transition={{ duration: 0.1 }}
           >
             <i className="ri-arrow-right-line" style={{ marginRight: '8px' }}></i> Checkout
           </motion.button>
         </motion.div>
 
-        {/* PROMO BANNER */}
+        {/* PROMO BANNER - NO DELAY */}
         <motion.div 
           className="cart-clean-promo"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35 }}
+          transition={{ duration: 0.15 }}
         >
           <motion.div 
             className="cart-clean-promo-icon"
