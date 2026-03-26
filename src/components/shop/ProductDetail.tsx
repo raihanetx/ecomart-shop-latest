@@ -147,6 +147,10 @@ export default function ProductDetail({ setView, addToCart }: ProductDetailProps
     }
   }, [fetchData, settingsLoaded])
   
+  // Get phone numbers - use settings or fallback to environment variables
+  const phoneNumber = settings.phoneNumber || process.env.NEXT_PUBLIC_PHONE_NUMBER || ''
+  const whatsappNumber = settings.whatsappNumber || process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || phoneNumber
+  
   // Get product images - use database images or fallback to main product image
   const productImages = selectedProductImages.length > 0 
     ? selectedProductImages.map(img => img.url) 
@@ -528,7 +532,7 @@ export default function ProductDetail({ setView, addToCart }: ProductDetailProps
           </button>
 
           {/* Line 3: Direct Order via Call/WhatsApp - For users not comfortable with online ordering */}
-          {settings.phoneNumber && (
+          {phoneNumber && (
             <div style={{ 
               marginTop: '8px',
               background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', 
@@ -599,7 +603,7 @@ export default function ProductDetail({ setView, addToCart }: ProductDetailProps
               }}>
                 {/* Call Button */}
                 <a 
-                  href={`tel:+${settings.phoneNumber.replace(/\D/g, '')}`} 
+                  href={`tel:+${phoneNumber.replace(/\D/g, '')}`} 
                   style={{ 
                     flex: 1,
                     display: 'flex', 
@@ -636,13 +640,13 @@ export default function ProductDetail({ setView, addToCart }: ProductDetailProps
                       fontSize: '13px', 
                       fontWeight: 700, 
                       color: '#111827'
-                    }}>{settings.phoneNumber}</span>
+                    }}>{phoneNumber}</span>
                   </div>
                 </a>
                 
                 {/* WhatsApp Button */}
                 <a 
-                  href={`https://wa.me/${(settings.whatsappNumber || settings.phoneNumber).replace(/\D/g, '')}?text=${encodeURIComponent(`হ্যালো, আমি "${sampleProduct.name}" পণ্যটি অর্ডার করতে চাই।`)}`} 
+                  href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(`হ্যালো, আমি "${sampleProduct.name}" পণ্যটি অর্ডার করতে চাই।`)}`} 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   style={{ 
@@ -681,7 +685,7 @@ export default function ProductDetail({ setView, addToCart }: ProductDetailProps
                       fontSize: '13px', 
                       fontWeight: 700, 
                       color: '#111827'
-                    }}>{settings.whatsappNumber || settings.phoneNumber}</span>
+                    }}>{whatsappNumber}</span>
                   </div>
                 </a>
               </div>
