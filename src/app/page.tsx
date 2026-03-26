@@ -8,7 +8,7 @@ import ContentPage from '@/components/content/ContentPage'
 import { useShopStore, useCartStore } from '@/store'
 import { useAppRouter } from '@/hooks/useAppRouter'
 import { useVisitorTracking } from '@/hooks/useVisitorTracking'
-import { LoadingPage } from '@/components/ui/skeleton'
+import { ShopPageSkeleton } from '@/components/ui/skeleton'
 
 function HomeContent() {
   const router = useRouter()
@@ -42,7 +42,11 @@ function HomeContent() {
   const hasCachedData = products.length > 0 || settingsLoaded
   
   if (!hasCachedData && isLoading) {
-    return <LoadingPage />
+    return (
+      <MainLayout>
+        <ShopPageSkeleton />
+      </MainLayout>
+    )
   }
   
   // Handle content pages (about, terms, etc.)
@@ -66,9 +70,13 @@ function HomeContent() {
   )
 }
 
-// Professional loading fallback with full animation
+// Professional skeleton loading fallback
 function LoadingFallback() {
-  return <LoadingPage />
+  return (
+    <MainLayout>
+      <ShopPageSkeleton />
+    </MainLayout>
+  )
 }
 
 export default function Home() {
