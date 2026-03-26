@@ -219,6 +219,15 @@ const SettingsView: React.FC = () => {
     }
   }
 
+  // Clear shop cache after settings changes
+  const clearShopCache = useCallback(async () => {
+    try {
+      await csrfFetch('/api/shop-data', { method: 'POST' })
+    } catch {
+      // Ignore cache clear errors
+    }
+  }, [csrfFetch])
+
   // Optimized save function - updates local state immediately, no refetch needed
   const saveSettingsOptimized = useCallback(async (updateData: Record<string, any>, onSuccess?: () => void) => {
     setSaving(true)
@@ -234,6 +243,8 @@ const SettingsView: React.FC = () => {
         setSettings((prev: any) => ({ ...prev, ...updateData }))
         onSuccess?.()
         showToastMsg('Saved successfully!')
+        // Clear frontend cache so changes reflect immediately
+        clearShopCache()
         return true
       }
       return false
@@ -243,7 +254,7 @@ const SettingsView: React.FC = () => {
     } finally {
       setSaving(false)
     }
-  }, [setSettings, showToastMsg])
+  }, [setSettings, showToastMsg, csrfFetch, clearShopCache])
 
   // Branding handlers
   const startBrandingEdit = () => {

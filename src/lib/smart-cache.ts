@@ -3,14 +3,14 @@
 // In-memory cache for fast access (cleared on page refresh)
 const memoryCache = new Map<string, { data: any; timestamp: number }>()
 
-// Cache durations - optimized for e-commerce
+// Cache durations - optimized for REAL-TIME updates
 export const CACHE_DURATIONS = {
-  SHOP_DATA: 60 * 1000,        // 1 minute - products, categories (fresh enough)
-  SETTINGS: 10 * 60 * 1000,    // 10 minutes - settings rarely change
-  PRODUCT: 2 * 60 * 1000,      // 2 minutes - product details
-  ORDERS: 30 * 1000,           // 30 seconds - order data changes often
-  CUSTOMERS: 60 * 1000,        // 1 minute - customer list
-  ANALYTICS: 5 * 60 * 1000,    // 5 minutes - analytics dashboard
+  SHOP_DATA: 0,               // NO CACHE - always fetch fresh data
+  SETTINGS: 0,                // NO CACHE - always fetch fresh data
+  PRODUCT: 0,                 // NO CACHE - always fetch fresh data
+  ORDERS: 0,                  // NO CACHE - always fetch fresh data
+  CUSTOMERS: 0,               // NO CACHE - always fetch fresh data
+  ANALYTICS: 30 * 1000,       // 30 seconds - analytics can have slight delay
 }
 
 // Request deduplication - prevent duplicate API calls

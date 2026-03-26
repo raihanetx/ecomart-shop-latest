@@ -89,12 +89,20 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        // API routes - short cache with revalidation
+        // API routes - NO CACHE for real-time data updates
         source: '/api/:path*',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, s-maxage=10, stale-while-revalidate=30',
+            value: 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
           },
         ],
       },

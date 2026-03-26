@@ -437,10 +437,22 @@ export function AdminProvider({ children, setView }: { children: ReactNode; setV
     }
   }
   
+  // Cache-busting fetch helper
+  const fetchWithCacheBust = async (url: string) => {
+    const separator = url.includes('?') ? '&' : '?'
+    return fetch(`${url}${separator}_t=${Date.now()}`, {
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      }
+    })
+  }
+
   // Fetch functions
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/categories')
+      const response = await fetchWithCacheBust('/api/categories')
       const data = await response.json()
       if (data.success) {
         setCategories(data.data.map((cat: any) => ({
@@ -460,7 +472,7 @@ export function AdminProvider({ children, setView }: { children: ReactNode; setV
   
   const fetchProducts = async () => {
     try {
-      const response = await fetch('/api/products')
+      const response = await fetchWithCacheBust('/api/products')
       const data = await response.json()
       if (data.success) {
         setProducts(data.data.map((prod: any) => ({
@@ -486,7 +498,7 @@ export function AdminProvider({ children, setView }: { children: ReactNode; setV
   
   const fetchOrders = async () => {
     try {
-      const response = await fetch('/api/orders')
+      const response = await fetchWithCacheBust('/api/orders')
       const data = await response.json()
       if (data.success) {
         const mappedOrders = data.data.map((ord: any) => ({
@@ -521,7 +533,7 @@ export function AdminProvider({ children, setView }: { children: ReactNode; setV
   
   const fetchCoupons = async () => {
     try {
-      const response = await fetch('/api/coupons')
+      const response = await fetchWithCacheBust('/api/coupons')
       const data = await response.json()
       if (data.success) {
         setCoupons(data.data.map((coup: any) => ({
@@ -543,8 +555,8 @@ export function AdminProvider({ children, setView }: { children: ReactNode; setV
     try {
       // SMART: Fetch customers and orders in PARALLEL (not N+1 queries!)
       const [customersRes, ordersRes] = await Promise.all([
-        fetch('/api/customers'),
-        fetch('/api/orders')
+        fetchWithCacheBust('/api/customers'),
+        fetchWithCacheBust('/api/orders')
       ])
       
       const [customersData, ordersData] = await Promise.all([
@@ -641,7 +653,7 @@ export function AdminProvider({ children, setView }: { children: ReactNode; setV
   const fetchSettings = async () => {
     try {
       // CRITICAL: Add cache-busting to ensure fresh data after credential saves
-      const response = await fetch(`/api/settings?_t=${Date.now()}`)
+      const response = await fetchWithCacheBust('/api/settings')
       const data = await response.json()
       if (data.success) {
         const d = data.data
@@ -711,7 +723,7 @@ export function AdminProvider({ children, setView }: { children: ReactNode; setV
   
   const fetchInventory = async () => {
     try {
-      const response = await fetch('/api/inventory')
+      const response = await fetchWithCacheBust('/api/inventory')
       const data = await response.json()
       if (data.success && data.data) {
         setInventory(data.data.map((item: any) => ({
@@ -735,7 +747,7 @@ export function AdminProvider({ children, setView }: { children: ReactNode; setV
   
   const fetchReviews = async () => {
     try {
-      const response = await fetch('/api/reviews')
+      const response = await fetchWithCacheBust('/api/reviews')
       const data = await response.json()
       if (data.success && data.data) {
         setAdminReviews(data.data.map((review: any) => ({
@@ -755,7 +767,7 @@ export function AdminProvider({ children, setView }: { children: ReactNode; setV
 
   const fetchAbandoned = async () => {
     try {
-      const response = await fetch('/api/abandoned')
+      const response = await fetchWithCacheBust('/api/abandoned')
       const data = await response.json()
       if (data.success && data.data) {
         setAbandonedCheckouts(data.data)

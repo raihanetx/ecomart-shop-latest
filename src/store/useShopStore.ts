@@ -201,6 +201,58 @@ export const useShopStore = create<ShopState>()(
         const now = Date.now()
         const { lastFetch, products, categories, settings } = get()
         
+        // SMART: Skip all caching when CACHE_DURATION is 0 (real-time mode)
+        if (CACHE_DURATION === 0) {
+          // Always fetch fresh data in real-time mode
+          set({ isLoading: true, error: null })
+          
+          try {
+            const response = await fetch('/api/shop-data', {
+              cache: 'no-store',
+              headers: {
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
+              }
+            })
+            const result = await response.json()
+            
+            if (result.success) {
+              const variantMap: Record<number, ProductVariant[]> = {}
+              if (result.data.variantMap) {
+                Object.entries(result.data.variantMap).forEach(([id, variants]: [string, any]) => {
+                  variantMap[parseInt(id)] = variants.map((v: any) => ({
+                    id: v.id,
+                    name: v.name,
+                    stock: v.stock,
+                    initialStock: v.stock,
+                    price: v.price,
+                    discount: v.discount || '0%',
+                    discountType: v.discountType || 'pct',
+                    discountValue: v.discountValue || 0,
+                    productId: parseInt(id),
+                  }))
+                })
+              }
+
+              set({
+                categories: result.data.categories,
+                products: result.data.products,
+                settings: result.data.settings,
+                variantMap: variantMap,
+                settingsLoaded: true,
+                isLoading: false,
+                lastFetch: now,
+              })
+            } else {
+              set({ error: result.error || 'Failed to load', isLoading: false })
+            }
+          } catch (error) {
+            console.error('Shop data fetch error:', error)
+            set({ error: 'Failed to load data', isLoading: false })
+          }
+          return
+        }
+        
         // SMART: Check memory cache first (instant!)
         if (memoryCacheData && now - memoryCacheData.lastFetch < CACHE_DURATION) {
           set({

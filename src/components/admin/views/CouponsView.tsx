@@ -25,6 +25,15 @@ export function CouponsView() {
     refetchCoupons,
   } = useAdmin()
 
+  // Clear shop cache after mutations
+  const clearShopCache = async () => {
+    try {
+      await csrfFetch('/api/shop-data', { method: 'POST' })
+    } catch (error) {
+      // Ignore cache clear errors
+    }
+  }
+
   const openCouponEdit = (coupon: Coupon | null = null) => {
     if (coupon && coupon.id) {
       setCouponForm({
@@ -71,6 +80,7 @@ export function CouponsView() {
         if (result.success) {
           showToastMsg('Coupon updated!')
           await refetchCoupons()
+          clearShopCache() // Clear frontend cache so changes reflect immediately
         } else {
           showToastMsg(result.error || 'Failed to update coupon')
         }
@@ -85,6 +95,7 @@ export function CouponsView() {
         if (result.success) {
           showToastMsg('Coupon added!')
           await refetchCoupons()
+          clearShopCache() // Clear frontend cache so changes reflect immediately
         } else {
           showToastMsg(result.error || 'Failed to create coupon')
         }
@@ -110,6 +121,7 @@ export function CouponsView() {
       if (result.success) {
         setCoupons(coupons.filter(c => c.id !== id))
         showToastMsg('Coupon deleted!')
+        clearShopCache() // Clear frontend cache so changes reflect immediately
       } else {
         showToastMsg('Failed to delete coupon')
       }
