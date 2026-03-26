@@ -536,93 +536,54 @@ export default function ProductDetail({ setView, addToCart }: ProductDetailProps
             <div style={{ 
               marginTop: '12px',
               background: 'white',
-              borderRadius: '12px', 
+              borderRadius: '10px', 
               border: '1px solid #e5e7eb',
-              padding: '14px',
+              padding: '12px 14px',
             }}>
-              {/* Header */}
               <div style={{ 
                 display: 'flex', 
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '6px',
-                marginBottom: '12px'
+                gap: '16px',
+                flexWrap: 'wrap'
               }}>
-                <i className="ri-phone-lock-line" style={{ color: '#16a34a', fontSize: '16px' }}></i>
                 <span style={{ 
                   fontSize: '13px', 
-                  fontWeight: 600, 
-                  color: '#374151',
+                  color: '#6b7280',
                   fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif"
                 }}>
-                  সরাসরি অর্ডার করতে যোগাযোগ করুন
+                  অর্ডার করতে যোগাযোগ করুন:
                 </span>
-              </div>
-              
-              {/* Contact Buttons */}
-              <div style={{ display: 'flex', gap: '10px' }}>
-                {/* Call Button */}
                 <a 
                   href={`tel:+${phoneNumber.replace(/\D/g, '')}`} 
                   style={{ 
-                    flex: 1,
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    gap: '8px', 
-                    padding: '12px',
-                    background: '#16a34a', 
-                    borderRadius: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
                     textDecoration: 'none',
+                    color: '#16a34a',
+                    fontWeight: 600,
+                    fontSize: '13px'
                   }}
                 >
-                  <i className="ri-phone-fill" style={{ color: 'white', fontSize: '16px' }}></i>
-                  <div style={{ textAlign: 'left' }}>
-                    <span style={{ 
-                      display: 'block',
-                      fontSize: '10px', 
-                      color: 'rgba(255,255,255,0.8)',
-                      fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif"
-                    }}>কল করুন</span>
-                    <span style={{ 
-                      fontSize: '13px', 
-                      fontWeight: 700, 
-                      color: 'white'
-                    }}>{phoneNumber}</span>
-                  </div>
+                  📞 {phoneNumber}
                 </a>
-                
-                {/* WhatsApp Button */}
+                <span style={{ color: '#d1d5db' }}>|</span>
                 <a 
                   href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(`হ্যালো, আমি "${sampleProduct.name}" পণ্যটি অর্ডার করতে চাই।`)}`} 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   style={{ 
-                    flex: 1,
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    gap: '8px', 
-                    padding: '12px',
-                    background: '#25D366', 
-                    borderRadius: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
                     textDecoration: 'none',
+                    color: '#25D366',
+                    fontWeight: 600,
+                    fontSize: '13px'
                   }}
                 >
-                  <i className="ri-whatsapp-fill" style={{ color: 'white', fontSize: '16px' }}></i>
-                  <div style={{ textAlign: 'left' }}>
-                    <span style={{ 
-                      display: 'block',
-                      fontSize: '10px', 
-                      color: 'rgba(255,255,255,0.8)',
-                      fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif"
-                    }}>হোয়াটসঅ্যাপ</span>
-                    <span style={{ 
-                      fontSize: '13px', 
-                      fontWeight: 700, 
-                      color: 'white'
-                    }}>{whatsappNumber}</span>
-                  </div>
+                  💬 {whatsappNumber}
                 </a>
               </div>
             </div>
