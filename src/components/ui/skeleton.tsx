@@ -33,74 +33,108 @@ function LoadingPage() {
   )
 }
 
-// Full Page Shop Skeleton - Professional Version
+// Header Skeleton - Professional loading for header
+function HeaderSkeleton() {
+  return (
+    <header style={{ 
+      position: 'fixed', 
+      top: 0, 
+      left: 0, 
+      right: 0, 
+      height: '64px',
+      background: 'white',
+      borderBottom: '1px solid #f3f4f6',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '0 16px',
+      zIndex: 50
+    }}>
+      {/* Logo */}
+      <div className="skeleton-shimmer-pro" style={{ width: '100px', height: '24px', borderRadius: '6px' }}></div>
+      
+      {/* Search */}
+      <div className="skeleton-shimmer-pro" style={{ width: '200px', height: '36px', borderRadius: '18px' }}></div>
+      
+      {/* Cart Icon */}
+      <div className="skeleton-shimmer-pro" style={{ width: '36px', height: '36px', borderRadius: '50%' }}></div>
+    </header>
+  )
+}
+
+// Full Page Shop Skeleton - Professional Version with Header
 function ShopPageSkeleton() {
   return (
-    <main className="flex-grow bg-gray-50">
-      {/* Hero Skeleton */}
-      <section className="w-full pb-4 md:pb-6">
-        <div className="mx-3 mt-3 md:mx-6 md:mt-6">
-          <div className="hero-skeleton"></div>
-        </div>
-      </section>
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      {/* Header Skeleton */}
+      <HeaderSkeleton />
+      
+      <main className="flex-grow pt-16">
+        {/* Hero Skeleton */}
+        <section className="w-full pb-4 md:pb-6">
+          <div className="mx-3 mt-3 md:mx-6 md:mt-6">
+            <div className="hero-skeleton"></div>
+          </div>
+        </section>
 
-      {/* Categories Skeleton */}
-      <section className="py-2 md:py-4">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="section-header-skeleton">
-            <div className="section-header-skeleton-title"></div>
-            <div className="section-header-skeleton-subtitle"></div>
-          </div>
-          
-          <div className="flex justify-center gap-3 md:gap-4 overflow-hidden">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="category-skeleton" style={{ animationDelay: `${i * 0.1}s` }}>
-                <div className="category-skeleton-icon"></div>
-                <div className="skeleton-text-line w-12 h-3"></div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Offer Cards Skeleton */}
-      <section className="py-2 md:py-4">
-        <div className="px-3 md:px-4">
-          <div className="section-header-skeleton mb-3 md:mb-4">
-            <div className="section-header-skeleton-title"></div>
-            <div className="section-header-skeleton-subtitle"></div>
-          </div>
-          <div className="flex gap-3 overflow-hidden px-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="offer-card-skeleton" style={{ animationDelay: `${i * 0.15}s` }}>
-                <div className="w-1/2 h-full skeleton-image"></div>
-                <div className="w-1/2 p-2 flex flex-col justify-center gap-2">
-                  <div className="skeleton-text-line w-10 h-2"></div>
-                  <div className="skeleton-text-line w-4/5 h-3"></div>
-                  <div className="skeleton-text-line w-14 h-3"></div>
+        {/* Categories Skeleton */}
+        <section className="py-2 md:py-4">
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="section-header-skeleton">
+              <div className="section-header-skeleton-title"></div>
+              <div className="section-header-skeleton-subtitle"></div>
+            </div>
+            
+            <div className="flex justify-center gap-3 md:gap-4 overflow-hidden">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="category-skeleton">
+                  <div className="category-skeleton-icon"></div>
+                  <div className="skeleton-text-line w-12 h-3"></div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Products Grid Skeleton */}
-      <section className="pb-8 pt-2 md:pt-4">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="section-header-skeleton mb-3 md:mb-4">
-            <div className="section-header-skeleton-title"></div>
-            <div className="section-header-skeleton-subtitle"></div>
+        {/* Offer Cards Skeleton */}
+        <section className="py-2 md:py-4">
+          <div className="px-3 md:px-4">
+            <div className="section-header-skeleton mb-3 md:mb-4">
+              <div className="section-header-skeleton-title"></div>
+              <div className="section-header-skeleton-subtitle"></div>
+            </div>
+            <div className="flex gap-3 overflow-hidden px-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="offer-card-skeleton">
+                  <div className="w-1/2 h-full skeleton-image"></div>
+                  <div className="w-1/2 p-2 flex flex-col justify-center gap-2">
+                    <div className="skeleton-text-line w-10 h-2"></div>
+                    <div className="skeleton-text-line w-4/5 h-3"></div>
+                    <div className="skeleton-text-line w-14 h-3"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-          
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-5">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
-              <ProductCardSkeleton key={i} />
-            ))}
+        </section>
+
+        {/* Products Grid Skeleton */}
+        <section className="pb-8 pt-2 md:pt-4">
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="section-header-skeleton mb-3 md:mb-4">
+              <div className="section-header-skeleton-title"></div>
+              <div className="section-header-skeleton-subtitle"></div>
+            </div>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-5">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+                <ProductCardSkeleton key={i} />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
-    </main>
+        </section>
+      </main>
+    </div>
   )
 }
 
@@ -473,6 +507,7 @@ function CheckoutSkeleton() {
 export { 
   Skeleton, 
   LoadingPage,
+  HeaderSkeleton,
   HeadlineSkeleton,
   SubheadlineSkeleton,
   TextSkeleton,

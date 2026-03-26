@@ -220,21 +220,16 @@ body {
    PROFESSIONAL SKELETON LOADING ANIMATIONS
    ============================================ */
 
-/* Premium Shimmer Effect - Smooth subtle glow */
+/* Premium Shimmer Effect - Fast and smooth */
 @keyframes shimmer {
   0% {
     transform: translateX(-100%);
-    opacity: 0;
   }
-  20% {
-    opacity: 1;
-  }
-  80% {
-    opacity: 1;
+  50% {
+    transform: translateX(100%);
   }
   100% {
     transform: translateX(100%);
-    opacity: 0;
   }
 }
 
@@ -305,15 +300,15 @@ body {
   }
 }
 
-/* Base Skeleton Styles */
+/* Base Skeleton Styles - Fast shimmer */
 .skeleton-base {
   background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   background-size: 200% 100%;
-  animation: shimmer 2s ease-in-out infinite;
+  animation: shimmer 1.5s ease-in-out infinite;
   border-radius: 8px;
 }
 
-/* Professional Skeleton with Shimmer */
+/* Professional Skeleton with Shimmer - Fast */
 .skeleton-shimmer-pro {
   position: relative;
   background: #e8e8e8;
@@ -331,12 +326,12 @@ body {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.4) 20%,
-    rgba(255, 255, 255, 0.6) 50%,
-    rgba(255, 255, 255, 0.4) 80%,
+    rgba(255, 255, 255, 0.5) 20%,
+    rgba(255, 255, 255, 0.7) 50%,
+    rgba(255, 255, 255, 0.5) 80%,
     transparent 100%
   );
-  animation: shimmer 2.2s ease-in-out infinite;
+  animation: shimmer 1.2s ease-in-out infinite;
 }
 
 /* Skeleton with Pulse */

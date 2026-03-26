@@ -42,11 +42,7 @@ function HomeContent() {
   const hasCachedData = products.length > 0 || settingsLoaded
   
   if (!hasCachedData && isLoading) {
-    return (
-      <MainLayout>
-        <ShopPageSkeleton />
-      </MainLayout>
-    )
+    return <ShopPageSkeleton />
   }
   
   // Handle content pages (about, terms, etc.)
@@ -72,11 +68,7 @@ function HomeContent() {
 
 // Professional skeleton loading fallback
 function LoadingFallback() {
-  return (
-    <MainLayout>
-      <ShopPageSkeleton />
-    </MainLayout>
-  )
+  return <ShopPageSkeleton />
 }
 
 export default function Home() {
