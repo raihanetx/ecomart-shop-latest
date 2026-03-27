@@ -357,7 +357,7 @@ export default function Shop({ setView, addToCart, onCategoryClick }: ShopProps)
                     className="flex-shrink-0 flex flex-col items-center group cursor-pointer"
                     onClick={() => handleCategoryClick(cat.name)}
                   >
-                    <div className="w-[60px] h-[60px] md:w-[85px] md:h-[85px] rounded-lg border flex items-center justify-center text-gray-700 transition-all duration-300 mb-1.5 overflow-hidden border-gray-200 bg-white group-hover:text-[#16a34a] group-hover:border-[#16a34a]">
+                    <div className="w-[75px] h-[75px] md:w-[85px] md:h-[85px] rounded-lg border flex items-center justify-center text-gray-700 transition-all duration-300 mb-1.5 overflow-hidden border-gray-200 bg-white group-hover:text-[#16a34a] group-hover:border-[#16a34a]">
                       {cat.type === 'icon' && cat.icon ? (
                         <i className={`${cat.icon} text-2xl md:text-3xl`}></i>
                       ) : cat.type === 'image' && cat.image ? (
@@ -366,7 +366,7 @@ export default function Shop({ setView, addToCart, onCategoryClick }: ShopProps)
                         <i className="ri-folder-line text-2xl md:text-3xl"></i>
                       )}
                     </div>
-                    <span className="text-[11px] md:text-xs font-medium text-gray-700">{cat.name}</span>
+                    <span className="text-[12px] md:text-xs font-medium text-gray-700">{cat.name}</span>
                   </div>
                 ))}
               </div>
@@ -441,7 +441,7 @@ export default function Shop({ setView, addToCart, onCategoryClick }: ShopProps)
                     return (
                       <div 
                         key={product.id} 
-                        className="flex-shrink-0 w-[250px] h-[100px] bg-white rounded-lg flex relative border border-gray-200 overflow-hidden cursor-pointer hover:border-[#16a34a] transition-all"
+                        className="flex-shrink-0 w-[200px] h-[90px] md:w-[250px] md:h-[100px] bg-white rounded-lg flex relative border border-gray-200 overflow-hidden cursor-pointer hover:border-[#16a34a] transition-all"
                         onClick={() => handleProductClick(product.id, product.name)}
                       >
                         {/* Corner Offer Badge */}
@@ -451,8 +451,8 @@ export default function Shop({ setView, addToCart, onCategoryClick }: ShopProps)
                           </div>
                         )}
                         
-                        {/* Left Side: Image (50%) */}
-                        <div className="w-1/2 h-full bg-[#fbfbfc] flex justify-center items-center p-1 border-r border-gray-100">
+                        {/* Left Side: Image (40%) */}
+                        <div className="w-[38%] h-full bg-[#fbfbfc] flex justify-center items-center p-1 border-r border-gray-100">
                           <img 
                             src={product.image} 
                             alt={product.name} 
@@ -461,8 +461,8 @@ export default function Shop({ setView, addToCart, onCategoryClick }: ShopProps)
                           />
                         </div>
                         
-                        {/* Right Side: Content (50%) */}
-                        <div className="w-1/2 p-2 flex flex-col justify-center">
+                        {/* Right Side: Content (62%) */}
+                        <div className="w-[62%] p-2 flex flex-col justify-center">
                           {/* Category */}
                           <span className="text-[9px] text-slate-400 uppercase font-semibold mb-0.5 tracking-wide">
                             {product.category || 'Product'}
@@ -585,7 +585,7 @@ export default function Shop({ setView, addToCart, onCategoryClick }: ShopProps)
                             animate={{ scale: 1 }}
                             transition={{ type: 'spring', stiffness: 500, damping: 15, delay: index * 0.02 }}
                           >
-                            {maxSavings > 0 ? `TK ${maxSavings} ছাড়` : `-${bestDiscountPercent}%`}
+                            {maxSavings > 0 ? `TK ${maxSavings} OFF` : `-${bestDiscountPercent}%`}
                           </motion.span>
                         )}
                         <div className="flex-grow flex items-center justify-center py-2">

@@ -119,6 +119,14 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* All buttons have slightly rounded corners (5px) */
+  button {
+    border-radius: 5px;
+  }
+  /* Links styled as buttons */
+  a[role="button"] {
+    border-radius: 5px;
+  }
 }
 
 /* Krishi Bitan Custom Styles */
@@ -1536,6 +1544,7 @@ body {
 .chk-bg { background-color: #ffffff; min-height: calc(100vh - 120px); display: flex; justify-content: center; align-items: center; }
 .chk-container { width: 100%; max-width: 480px; padding: 20px 25px 50px 25px; }
 .chk-divider { height: 1px; background-color: #f0f0f0; margin: 30px 0; border: none; }
+.chk-section { background: white; border: 1px solid #f0f0f0; border-radius: 12px; padding: 20px; }
 .chk-section-header { font-size: 0.8rem; font-weight: 700; color: #222; margin-bottom: 20px; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
 .chk-section-header i { font-size: 1.1rem; color: #16a34a; font-weight: normal; }
 .chk-input-wrapper { position: relative; margin-bottom: 20px; }

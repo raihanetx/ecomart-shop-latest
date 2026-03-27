@@ -54,7 +54,7 @@ export default function Checkout({ setView, onConfirm, cartItems = [], deliveryC
   const [validationErrors, setValidationErrors] = useState<{name?: string; phone?: string; address?: string}>({})
   
   // Get cart store for coupon persistence and user action tracking
-  const { appliedCoupon, applyCoupon, userAddedToCart } = useCartStore()
+  const { appliedCoupon, applyCoupon, userAddedToCart, updateQuantity } = useCartStore()
   const hasLoadedStoredCoupon = useRef(false)
   
   // Offline detection
@@ -403,7 +403,43 @@ export default function Checkout({ setView, onConfirm, cartItems = [], deliveryC
                         }}></span>
                       )}
                     </h4>
-                    <span style={{ fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif" }}>পরিমাণ: {item.quantity || 1}</span>
+                    {/* Quantity control in same line */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+                      <span style={{ fontSize: '12px', color: '#666', fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif" }}>পরিমাণ:</span>
+                      <button 
+                        onClick={() => updateQuantity(item.id, Math.max(1, (item.quantity || 1) - 1))}
+                        style={{ 
+                          width: '24px', 
+                          height: '24px', 
+                          borderRadius: '5px', 
+                          border: '1px solid #e5e7eb', 
+                          background: 'white', 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center', 
+                          cursor: 'pointer',
+                          color: '#666',
+                          fontSize: '14px'
+                        }}
+                      >−</button>
+                      <span style={{ fontSize: '14px', fontWeight: 600, color: '#333', minWidth: '20px', textAlign: 'center' }}>{item.quantity || 1}</span>
+                      <button 
+                        onClick={() => updateQuantity(item.id, (item.quantity || 1) + 1)}
+                        style={{ 
+                          width: '24px', 
+                          height: '24px', 
+                          borderRadius: '5px', 
+                          border: '1px solid #e5e7eb', 
+                          background: 'white', 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center', 
+                          cursor: 'pointer',
+                          color: '#666',
+                          fontSize: '14px'
+                        }}
+                      >+</button>
+                    </div>
                   </div>
                   <div className="chk-prod-price">TK {Math.round(item.price * (item.quantity || 1))}</div>
                   {onRemoveItem && (

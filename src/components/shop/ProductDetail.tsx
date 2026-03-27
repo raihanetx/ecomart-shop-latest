@@ -262,6 +262,15 @@ export default function ProductDetail({ setView, addToCart }: ProductDetailProps
     : 'pct') as 'pct' | 'fixed'
   const hasOffer = selectedProduct?.offer || false
   
+  // Calculate savings amount for badge (like offer cards)
+  let maxSavings = 0
+  if (displayDiscountValue > 0 && displayDiscountType === 'pct' && displayPrice > 0) {
+    // Original price = current price / (1 - discount/100)
+    maxSavings = Math.round((displayPrice * displayDiscountValue) / (100 - displayDiscountValue))
+  } else if (displayDiscountType === 'fixed') {
+    maxSavings = displayDiscountValue
+  }
+  
   // Calculate total price
   const totalPrice = displayPrice * quantity
   
@@ -377,11 +386,13 @@ export default function ProductDetail({ setView, addToCart }: ProductDetailProps
     quantity: 1
   } : { id: 99, name: 'Organic Premium Carrots', price: 80, oldPrice: 95, img: 'https://i.postimg.cc/B6sD1hKt/1000020579-removebg-preview.png', weight: '1 KG', quantity: 1 }
 
-  // Calculate discount badge text
+  // Calculate discount badge text (same style as offer cards)
   const hasDiscount = displayDiscountValue > 0 || (selectedProduct?.oldPrice && selectedProduct.oldPrice > displayPrice)
-  const discountBadgeText = displayDiscountValue > 0
-    ? (displayDiscountType === 'pct' ? `${displayDiscountValue}%` : `TK ${roundPrice(displayDiscountValue)}`)
-    : selectedProduct?.discount
+  const discountBadgeText = maxSavings > 0 
+    ? `TK ${maxSavings} OFF` 
+    : displayDiscountValue > 0 
+      ? `${displayDiscountValue}% OFF` 
+      : ''
 
   return (
     <div className="bg-white w-full p-5 md:p-20 min-h-screen">
@@ -407,9 +418,9 @@ export default function ProductDetail({ setView, addToCart }: ProductDetailProps
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
         <div className="flex flex-col w-full">
           <div className="flex-grow relative w-full bg-transparent rounded-2xl overflow-hidden border border-gray-200 h-[280px] md:h-[350px]">
-            {hasDiscount && (
-              <div className="absolute top-3 left-3 bg-red-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-md z-10 shadow-md">
-                -{discountBadgeText}
+            {hasDiscount && discountBadgeText && (
+              <div className="absolute top-3 left-3 bg-red-600 text-white text-[9px] font-bold px-2 py-0.5 rounded z-10">
+                {discountBadgeText}
               </div>
             )}
             <img src={productImages[selectedImageIndex] || sampleProduct.img} className="absolute inset-0 w-full h-full object-contain" alt={sampleProduct.name} onError={handleImageError} />
