@@ -149,6 +149,38 @@ export default function ProductDetail({ setView, addToCart }: ProductDetailProps
     }
   }, [fetchData, settingsLoaded])
   
+  // Auto-select variant with highest discount (in TK amount)
+  useEffect(() => {
+    if (selectedProductVariants.length > 0) {
+      let maxDiscountIndex = 0
+      let maxDiscountAmount = 0
+      
+      selectedProductVariants.forEach((variant, index) => {
+        const price = Number(variant.price) || 0
+        const discountValue = Number(variant.discountValue) || 0
+        const discountType = variant.discountType || 'pct'
+        
+        let discountAmount = 0
+        if (discountValue > 0 && price > 0) {
+          if (discountType === 'pct') {
+            // Calculate savings: price * discount% / (100 - discount%)
+            discountAmount = Math.round((price * discountValue) / (100 - discountValue))
+          } else {
+            // Fixed discount
+            discountAmount = discountValue
+          }
+        }
+        
+        if (discountAmount > maxDiscountAmount) {
+          maxDiscountAmount = discountAmount
+          maxDiscountIndex = index
+        }
+      })
+      
+      setSelectedVariantIndex(maxDiscountIndex)
+    }
+  }, [selectedProductVariants.length]) // Only run when variants are loaded
+  
   // Get product images - use database images or fallback to main product image
   const productImages = selectedProductImages.length > 0 
     ? selectedProductImages.map(img => img.url) 
