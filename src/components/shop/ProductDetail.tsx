@@ -419,7 +419,7 @@ export default function ProductDetail({ setView, addToCart }: ProductDetailProps
         <div className="flex flex-col w-full">
           <div className="flex-grow relative w-full bg-transparent rounded-2xl overflow-hidden border border-gray-200 h-[280px] md:h-[350px]">
             {hasDiscount && discountBadgeText && (
-              <div className="absolute top-0 left-0 bg-[#ff4757] text-white text-[10px] font-bold px-2 py-0.5 rounded-br-lg z-10">
+              <div className="absolute top-0 left-0 bg-[#ff4757] text-white text-[10px] font-bold px-2 py-0.5 rounded-tl-2xl rounded-br-lg z-10">
                 {discountBadgeText}
               </div>
             )}
@@ -447,7 +447,7 @@ export default function ProductDetail({ setView, addToCart }: ProductDetailProps
               <span className="text-sm text-gray-400 line-through font-medium">TK {roundPrice(originalPrice)}</span>
             )}
           </div>
-          <p className="text-base text-[#6B7280] leading-relaxed mb-6 line-clamp-3 whitespace-pre-wrap">{parseBoldText(selectedProduct?.shortDesc || 'Farm-fresh organic produce handpicked from local farms. Crisp, sweet, and perfect for your needs. Rich in essential vitamins and nutrients.')}</p>
+          <p className="text-base text-[#6B7280] leading-relaxed mb-6 line-clamp-2 md:line-clamp-3 whitespace-pre-wrap">{parseBoldText(selectedProduct?.shortDesc || 'Farm-fresh organic produce handpicked from local farms. Crisp, sweet, and perfect for your needs. Rich in essential vitamins and nutrients.')}</p>
 
           {/* Variant Selection */}
           <div style={{ marginBottom: '16px' }}>

@@ -114,9 +114,7 @@ const getStatusConfig = (order: Order): StatusConfig => {
 }
 
 export default function Orders({ orders, setView }: OrdersProps) {
-  // Get free delivery minimum from store - MUST be at top before any early returns
   const { settings } = useShopStore()
-  const freeDeliveryMin = settings.freeDeliveryMin || 599
 
   if (orders.length === 0) {
     return (
@@ -173,21 +171,6 @@ export default function Orders({ orders, setView }: OrdersProps) {
   return (
     <div className="order-clean-wrapper" style={{ paddingBottom: '80px' }}>
       <div className="order-clean-container">
-        {/* Free Delivery Section */}
-        <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg p-4 mb-4 shadow-lg">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center shrink-0">
-              <i className="ri-truck-line text-2xl"></i>
-            </div>
-            <div>
-              <h3 className="font-bold text-base font-bangla">ফ্রি ডেলিভারি</h3>
-              <p className="text-white/90 text-sm font-bangla">
-                TK {freeDeliveryMin} বা তার বেশি অর্ডারে ডেলিভারি চার্জ ফ্রি
-              </p>
-            </div>
-          </div>
-        </div>
-        
         <div className="order-clean-list">
           {orders.map((order) => {
             const statusConfig = getStatusConfig(order)

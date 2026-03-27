@@ -446,7 +446,7 @@ export default function Shop({ setView, addToCart, onCategoryClick }: ShopProps)
                       >
                         {/* Corner Offer Badge */}
                         {hasOffer && (
-                          <div className="absolute top-0 left-0 bg-[#ff4757] text-white text-[10px] font-bold px-2 py-0.5 rounded-br-lg z-10">
+                          <div className="absolute top-0 left-0 bg-[#ff4757] text-white text-[10px] font-bold px-2 py-0.5 rounded-tl-lg rounded-br-lg z-10">
                             {offerText}
                           </div>
                         )}
@@ -580,7 +580,7 @@ export default function Shop({ setView, addToCart, onCategoryClick }: ShopProps)
                       >
                         {hasDiscount && (
                           <span 
-                            className="absolute top-0 left-0 bg-[#ff4757] text-white text-[10px] font-bold px-2 py-0.5 rounded-br-lg z-10"
+                            className="absolute top-0 left-0 bg-[#ff4757] text-white text-[10px] font-bold px-2 py-0.5 rounded-tl-xl rounded-br-lg z-10"
                           >
                             {maxSavings > 0 ? `TK ${maxSavings} OFF` : `-${bestDiscountPercent}%`}
                           </span>
