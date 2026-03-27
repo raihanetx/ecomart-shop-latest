@@ -14,7 +14,7 @@ interface DeliverySettings {
 
 interface CheckoutProps {
   setView: (v: ViewType) => void
-  onConfirm: (customerInfo: { name: string; phone: string; address: string; note?: string }, couponCode?: string) => void
+  onConfirm: (customerInfo: { name: string; phone: string; address: string; note?: string }, couponCode?: string, checkoutDuration?: number) => void
   cartItems?: CartItem[]
   deliveryCharge?: number
   deliverySettings?: DeliverySettings
@@ -377,7 +377,8 @@ export default function Checkout({ setView, onConfirm, cartItems = [], deliveryC
     
     setIsSubmitting(true)
     try {
-      await onConfirm({ name, phone, address, note }, validatedCoupon?.code || undefined)
+      // Pass checkout duration to parent
+      await onConfirm({ name, phone, address, note }, validatedCoupon?.code || undefined, checkoutDuration)
       // Navigation happens in onConfirm, so we don't need to set isSubmitting to false
     } catch (error: any) {
       console.error('Checkout error:', error)

@@ -218,7 +218,7 @@ export async function POST(request: NextRequest) {
 // PATCH: Mark ONLY the LATEST visit as completed (Public - used during checkout completion)
 export async function PATCH(request: NextRequest) {
   try {
-    const { sessionId, completedOrderId } = await request.json()
+    const { sessionId, completedOrderId, checkoutSeconds: providedSeconds } = await request.json()
     
     if (!sessionId) {
       return NextResponse.json({ success: false, error: 'Session ID required' }, { status: 400 })
@@ -235,12 +235,13 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'No visit found' }, { status: 404 })
     }
     
-    // Calculate checkout duration
+    // Calculate checkout duration - use provided value or calculate from timestamps
     const endTime = new Date()
     const startTime = latestVisit[0].checkoutStartedAt
-    let checkoutSeconds = 0
+    let checkoutSeconds = providedSeconds || 0
     
-    if (startTime) {
+    // If no provided seconds, calculate from timestamps
+    if (!checkoutSeconds && startTime) {
       const diffMs = endTime.getTime() - new Date(startTime).getTime()
       checkoutSeconds = Math.floor(diffMs / 1000)
     }

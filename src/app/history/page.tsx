@@ -9,7 +9,7 @@ import { Order } from '@/types'
 
 function HistoryContent() {
   const { navigate } = useAppRouter()
-  const { orders, customerPhone, isLoading, fetchOrdersFromServer, refreshOrders } = useOrderStore()
+  const { orders, customerPhone, isLoading, fetchOrdersFromServer } = useOrderStore()
   const [showPhoneInput, setShowPhoneInput] = useState(false)
   const [phoneInput, setPhoneInput] = useState('')
   const [localLoading, setLocalLoading] = useState(true)
@@ -40,7 +40,7 @@ function HistoryContent() {
       
       if (urlPhone) {
         // Phone in URL - fetch orders from server
-        console.log('Phone found in URL:', urlPhone)
+        console.log('[HISTORY] Phone found in URL:', urlPhone)
         await fetchOrdersFromServer(urlPhone)
         setLocalLoading(false)
         return
@@ -49,19 +49,38 @@ function HistoryContent() {
       // Check store for customerPhone (from persist)
       if (customerPhone) {
         // Have phone in storage - fetch fresh from server
-        console.log('Phone found in storage:', customerPhone)
+        console.log('[HISTORY] Phone found in storage:', customerPhone)
         await fetchOrdersFromServer(customerPhone)
         setLocalLoading(false)
         return
       }
       
       // No phone anywhere - show input
-      console.log('No phone found, showing input')
+      console.log('[HISTORY] No phone found, showing input')
       setShowPhoneInput(true)
       setLocalLoading(false)
     }
     
     checkAndFetch()
+  }, [hydrated, customerPhone, fetchOrdersFromServer])
+
+  // Auto-refresh when page becomes visible (tab switch back)
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible' && hydrated) {
+        const urlParams = new URLSearchParams(window.location.search)
+        const urlPhone = urlParams.get('phone')
+        const phoneToUse = urlPhone || customerPhone
+        
+        if (phoneToUse) {
+          console.log('[HISTORY] Page visible, refreshing orders for:', phoneToUse)
+          await fetchOrdersFromServer(phoneToUse)
+        }
+      }
+    }
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
   }, [hydrated, customerPhone, fetchOrdersFromServer])
 
   // Handle phone submit
@@ -86,6 +105,7 @@ function HistoryContent() {
     const phoneToUse = urlPhone || customerPhone
     
     if (phoneToUse) {
+      console.log('[HISTORY] Manual refresh for phone:', phoneToUse)
       await fetchOrdersFromServer(phoneToUse)
     }
   }

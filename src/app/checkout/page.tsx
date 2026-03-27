@@ -84,9 +84,9 @@ function CheckoutContent() {
     }
   }, [])
 
-  const handleConfirmOrder = useCallback(async (customerInfo: { name: string; phone: string; address: string; note?: string }, couponCode?: string) => {
+  const handleConfirmOrder = useCallback(async (customerInfo: { name: string; phone: string; address: string; note?: string }, couponCode?: string, checkoutDuration?: number) => {
     if (process.env.NODE_ENV === 'development') {
-      console.log('handleConfirmOrder called with:', { customerInfo, couponCode, cartItemsCount: cartItems.length })
+      console.log('handleConfirmOrder called with:', { customerInfo, couponCode, cartItemsCount: cartItems.length, checkoutDuration })
     }
     
     try {
@@ -108,7 +108,7 @@ function CheckoutContent() {
       const orderNumber = `ORD-${Date.now().toString().slice(-6)}`
       
       if (process.env.NODE_ENV === 'development') {
-        console.log('Creating order:', { orderNumber, subtotalBeforeOffer, totalOfferDiscount, delivery, total })
+        console.log('Creating order:', { orderNumber, subtotalBeforeOffer, totalOfferDiscount, delivery, total, checkoutDuration })
       }
       
       const orderItemsData = itemsWithOfferDiscount.map(item => ({
@@ -122,6 +122,9 @@ function CheckoutContent() {
         couponCode: null,
         couponDiscount: 0
       }))
+      
+      // Get session ID for abandoned checkout tracking
+      const sessionId = localStorage.getItem('ecomart_customer_session')
       
       const response = await fetch('/api/orders', {
         method: 'POST',
@@ -142,6 +145,7 @@ function CheckoutContent() {
           status: 'pending',
           couponCodes: couponCode ? [couponCode.toUpperCase()] : [],
           items: orderItemsData,
+          checkoutSeconds: checkoutDuration || 0, // Pass checkout duration
         }),
       })
       
@@ -151,6 +155,24 @@ function CheckoutContent() {
       }
       
       if (result.success) {
+        // Mark abandoned checkout as completed with duration
+        if (sessionId) {
+          try {
+            await fetch('/api/abandoned', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                sessionId,
+                completedOrderId: orderNumber,
+                checkoutSeconds: checkoutDuration || 0
+              })
+            })
+            console.log('✅ Marked checkout as completed, duration:', checkoutDuration, 'seconds')
+          } catch (e) {
+            console.error('Failed to mark checkout as completed:', e)
+          }
+        }
+        
         const newOrder = {
           id: orderNumber,
           customer: customerInfo.name,

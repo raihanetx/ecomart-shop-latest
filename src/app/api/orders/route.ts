@@ -122,6 +122,10 @@ export async function GET(request: NextRequest) {
       
       // Clean phone number (remove non-digits)
       const cleanPhone = phone.replace(/\D/g, '')
+      
+      // Log for debugging
+      console.log('[ORDERS API] Public fetch for phone:', cleanPhone)
+      
       if (cleanPhone.length < 10 || cleanPhone.length > 14) {
         return NextResponse.json(
           { success: false, error: 'Invalid phone number format' },
@@ -129,8 +133,25 @@ export async function GET(request: NextRequest) {
         )
       }
       
-      // Fetch orders for this phone number
-      const customerOrders = await db.select().from(orders).where(eq(orders.phone, cleanPhone))
+      // Fetch orders for this phone number - try multiple formats
+      // Phone might be stored as 01XXXXXXXXX or just 1XXXXXXXXX
+      let customerOrders = await db.select().from(orders).where(eq(orders.phone, cleanPhone))
+      
+      // If no results and phone starts with 0, try without leading 0
+      if (customerOrders.length === 0 && cleanPhone.startsWith('0')) {
+        const phoneWithoutLeadingZero = cleanPhone.substring(1)
+        console.log('[ORDERS API] Trying without leading 0:', phoneWithoutLeadingZero)
+        customerOrders = await db.select().from(orders).where(eq(orders.phone, phoneWithoutLeadingZero))
+      }
+      
+      // If still no results, try with leading 0
+      if (customerOrders.length === 0 && !cleanPhone.startsWith('0')) {
+        const phoneWithLeadingZero = '0' + cleanPhone
+        console.log('[ORDERS API] Trying with leading 0:', phoneWithLeadingZero)
+        customerOrders = await db.select().from(orders).where(eq(orders.phone, phoneWithLeadingZero))
+      }
+      
+      console.log('[ORDERS API] Found', customerOrders.length, 'orders for phone:', cleanPhone)
       
       // Fetch items for these orders
       const orderIds = customerOrders.map(o => o.id)

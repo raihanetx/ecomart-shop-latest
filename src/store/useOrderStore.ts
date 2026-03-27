@@ -37,24 +37,27 @@ export const useOrderStore = create<OrderState>()(
       fetchOrdersFromServer: async (phone: string) => {
         const cleanPhone = phone.replace(/\D/g, '')
         if (cleanPhone.length < 10) {
-          console.log('Phone number too short:', cleanPhone)
+          console.log('[ORDER STORE] Phone number too short:', cleanPhone)
           return
         }
 
         set({ isLoading: true })
         
         try {
-          console.log('Fetching orders from server for phone:', cleanPhone)
+          console.log('[ORDER STORE] Fetching orders from server for phone:', cleanPhone)
           
-          const response = await fetch(`/api/orders?phone=${encodeURIComponent(cleanPhone)}`, {
-            cache: 'no-store', // Always get fresh data
+          // Add timestamp to prevent caching
+          const timestamp = Date.now()
+          const response = await fetch(`/api/orders?phone=${encodeURIComponent(cleanPhone)}&_t=${timestamp}`, {
+            cache: 'no-store',
             headers: {
-              'Cache-Control': 'no-cache'
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache'
             }
           })
           const result = await response.json()
           
-          console.log('API response:', result)
+          console.log('[ORDER STORE] API response success:', result.success, 'count:', result.count)
           
           if (result.success && result.data) {
             // Transform API data to match Order type
@@ -94,14 +97,17 @@ export const useOrderStore = create<OrderState>()(
               orders, 
               customerPhone: phone,
             })
-            console.log('✅ Fetched', orders.length, 'orders from server')
-            console.log('Order statuses:', orders.map(o => ({ id: o.id, status: o.status, courierStatus: o.courierStatus })))
+            console.log('[ORDER STORE] ✅ Fetched', orders.length, 'orders from server')
+            // Log order statuses for debugging
+            orders.forEach(o => {
+              console.log('[ORDER STORE] Order:', o.id, 'status:', o.status, 'courierStatus:', o.courierStatus)
+            })
           } else {
-            console.log('No orders found or API error:', result)
+            console.log('[ORDER STORE] No orders found or API error:', result)
             set({ orders: [] })
           }
         } catch (error) {
-          console.error('Error fetching orders:', error)
+          console.error('[ORDER STORE] Error fetching orders:', error)
         } finally {
           set({ isLoading: false })
         }
@@ -111,11 +117,11 @@ export const useOrderStore = create<OrderState>()(
         const { customerPhone } = get()
         
         if (!customerPhone) {
-          console.log('No customer phone set, cannot refresh')
+          console.log('[ORDER STORE] No customer phone set, cannot refresh')
           return
         }
         
-        console.log('Refreshing orders for phone:', customerPhone)
+        console.log('[ORDER STORE] Refreshing orders for phone:', customerPhone)
         await get().fetchOrdersFromServer(customerPhone)
       },
     }),
