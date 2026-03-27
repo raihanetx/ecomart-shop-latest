@@ -11,7 +11,7 @@ function CheckoutContent() {
   const router = useRouter()
   const { navigate } = useAppRouter()
   const { items: cartItems, removeItem, clearCart, isHydrated } = useCartStore()
-  const { addOrder } = useOrderStore()
+  const { addOrder, setCustomerPhone } = useOrderStore()
   const { fetchData } = useShopStore()
   
   const [deliverySettings, setDeliverySettings] = useState<{
@@ -172,6 +172,7 @@ function CheckoutContent() {
         }
         
         addOrder(newOrder)
+        setCustomerPhone(customerInfo.phone)
         clearCart()
         
         if (process.env.NODE_ENV === 'development') {

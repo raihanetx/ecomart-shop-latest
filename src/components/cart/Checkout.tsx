@@ -52,6 +52,7 @@ export default function Checkout({ setView, onConfirm, cartItems = [], deliveryC
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isOffline, setIsOffline] = useState(false)
   const [validationErrors, setValidationErrors] = useState<{name?: string; phone?: string; address?: string}>({})
+  const [checkoutDuration, setCheckoutDuration] = useState(0) // in seconds
   
   // Get cart store for coupon persistence and user action tracking
   const { appliedCoupon, applyCoupon, userAddedToCart, updateQuantity } = useCartStore()
@@ -73,6 +74,26 @@ export default function Checkout({ setView, onConfirm, cartItems = [], deliveryC
       window.removeEventListener('offline', handleOffline)
     }
   }, [])
+  
+  // Checkout duration timer - track how long customer has been on checkout
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCheckoutDuration(prev => prev + 1)
+    }, 1000)
+    
+    return () => clearInterval(timer)
+  }, [])
+  
+  // Format duration for display
+  const formatDuration = (seconds: number): string => {
+    if (seconds < 60) return `${seconds} সেকেন্ড`
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    if (mins < 60) return `${mins} মিনিট ${secs > 0 ? `${secs} সেকেন্ড` : ''}`
+    const hours = Math.floor(mins / 60)
+    const remainingMins = mins % 60
+    return `${hours} ঘণ্টা ${remainingMins > 0 ? `${remainingMins} মিনিট` : ''}`
+  }
   
   // Form validation
   const validateForm = (): boolean => {
@@ -374,8 +395,14 @@ export default function Checkout({ setView, onConfirm, cartItems = [], deliveryC
       <div className="chk-container">
         {/* Order Summary Section - FIRST */}
         <div className="chk-section" style={{ marginBottom: '24px' }}>
-          <div className="chk-section-header" style={{ fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif", fontSize: '20px', fontWeight: 700, marginBottom: '16px' }}>
-            <i className="ri-shopping-bag-3-line"></i> আপনার অর্ডার সারসংক্ষেপ
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+            <div className="chk-section-header" style={{ fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif", fontSize: '20px', fontWeight: 700 }}>
+              <i className="ri-shopping-bag-3-line"></i> আপনার অর্ডার সারসংক্ষেপ
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif", fontSize: '12px', color: '#888', background: '#f5f5f5', padding: '4px 8px', borderRadius: '12px' }}>
+              <i className="ri-time-line" style={{ fontSize: '14px' }}></i>
+              <span>{formatDuration(checkoutDuration)}</span>
+            </div>
           </div>
           
           {/* Total Items Summary - Clear breakdown */}

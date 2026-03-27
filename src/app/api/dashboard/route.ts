@@ -228,14 +228,13 @@ export async function GET(request: NextRequest) {
     const uniqueVisitors = uniqueVisitorSet.size
     
     // ============================================
-    // NEW vs REPEAT VISITOR LOGIC (SIMPLE & CORRECT)
+    // NEW vs REPEAT VISITOR LOGIC (USER REQUIREMENT)
     // ============================================
-    // Total Visitors = New Visitors + Repeat Visitors
-    // New Visitor = First time EVER on website (their FIRST visit is in this period)
-    // Repeat Visitor = Had visited BEFORE (their first visit was before this period)
-    // Each visitor is EITHER New OR Repeat (mutually exclusive)
+    // First-time Visitor = visited EXACTLY ONCE (total)
+    // Repeat Visitor = visited MORE THAN ONCE (total)
+    // This is based on TOTAL visit count, not period comparison
     
-    // Get ALL historical sessions for these visitors to find their FIRST visit date
+    // Get ALL historical sessions for these visitors to count total visits
     const allSessionsForVisitors = uniqueVisitorSet.size > 0 
       ? await db.select({
           sessionId: visitorSessions.sessionId,
@@ -245,34 +244,29 @@ export async function GET(request: NextRequest) {
           .where(inArray(visitorSessions.sessionId, Array.from(uniqueVisitorSet)))
       : []
     
-    // Find the FIRST (earliest) visit date for each sessionId
-    const firstVisitDateBySession: Record<string, string> = {}
+    // Count total visits per sessionId from ALL historical data
+    const visitCountsBySession: Record<string, number> = {}
     for (const session of allSessionsForVisitors) {
       const sid = session.sessionId
-      if (!firstVisitDateBySession[sid] || (session.date && session.date < firstVisitDateBySession[sid])) {
-        firstVisitDateBySession[sid] = session.date || ''
-      }
+      visitCountsBySession[sid] = (visitCountsBySession[sid] || 0) + 1
     }
     
-    // Count New vs Repeat Visitors
+    // Count New vs Repeat Visitors based on TOTAL visit count
     let newVisitorsCount = 0
     let returningVisitorsCount = 0
     
     for (const sessionId of uniqueVisitorSet) {
-      const firstVisitDate = firstVisitDateBySession[sessionId] || ''
+      const totalVisitsForSession = visitCountsBySession[sessionId] || 0
       
-      // If their FIRST EVER visit was in this period = NEW Visitor
-      if (firstVisitDate >= startDateStr) {
+      // First-time visitor = exactly 1 visit in total
+      if (totalVisitsForSession === 1) {
         newVisitorsCount++
       } 
-      // If their FIRST visit was BEFORE this period = REPEAT Visitor (they came back)
+      // Repeat visitor = more than 1 visit in total
       else {
         returningVisitorsCount++
       }
     }
-    
-    // Verify: Total = New + Repeat
-    // uniqueVisitors should equal newVisitorsCount + returningVisitorsCount
 
     // Device Stats from visitorSessions
     const deviceCounts = { mobile: 0, desktop: 0, tablet: 0 }

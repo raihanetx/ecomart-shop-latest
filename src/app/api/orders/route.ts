@@ -101,18 +101,88 @@ async function sendToSteadfastCourier(order: any): Promise<{ success: boolean; c
   }
 }
 
-// GET /api/orders - SMART: Fetch ALL data in 2 parallel queries, not N+1! (Admin only)
+// GET /api/orders - SMART: Fetch ALL data in 2 parallel queries, not N+1!
+// Admin: can see all orders (requires auth)
+// Public: can see their own orders by phone number (no auth required)
 export async function GET(request: NextRequest) {
   try {
-    // Authentication required - order data is business sensitive
+    const searchParams = request.nextUrl.searchParams
+    const status = searchParams.get('status')
+    const customerId = searchParams.get('customerId')
+    const phone = searchParams.get('phone') // For public customer order lookup
+    
+    // Public access for customer's own orders by phone
+    if (phone) {
+      // Rate limit for public access
+      const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
+      const rateLimit = checkRateLimit(`orders-phone:${ip}`, 30, 60000) // 30 requests per minute
+      if (!rateLimit.allowed) {
+        return rateLimitErrorResponse(rateLimit.resetAt)
+      }
+      
+      // Clean phone number (remove non-digits)
+      const cleanPhone = phone.replace(/\D/g, '')
+      if (cleanPhone.length < 10 || cleanPhone.length > 14) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid phone number format' },
+          { status: 400 }
+        )
+      }
+      
+      // Fetch orders for this phone number
+      const customerOrders = await db.select().from(orders).where(eq(orders.phone, cleanPhone))
+      
+      // Fetch items for these orders
+      const orderIds = customerOrders.map(o => o.id)
+      let allItems: any[] = []
+      if (orderIds.length > 0) {
+        allItems = await db.select().from(orderItems).where(inArray(orderItems.orderId, orderIds))
+      }
+      
+      // Build items lookup map
+      const itemsByOrderId: Record<string, any[]> = {}
+      for (const item of allItems) {
+        if (!itemsByOrderId[item.orderId || '']) {
+          itemsByOrderId[item.orderId || ''] = []
+        }
+        itemsByOrderId[item.orderId || ''].push({
+          name: item.name,
+          variant: item.variant,
+          qty: item.qty,
+          basePrice: item.basePrice,
+          offerText: item.offerText,
+          offerDiscount: item.offerDiscount || 0,
+          couponCode: item.couponCode,
+          couponDiscount: item.couponDiscount || 0,
+          productId: item.productId,
+        })
+      }
+      
+      // Sort by createdAt descending
+      customerOrders.sort((a, b) => {
+        const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0
+        const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0
+        return timeB - timeA
+      })
+      
+      // Attach items to orders
+      const ordersWithItems = customerOrders.map(order => ({
+        ...order,
+        items: itemsByOrderId[order.id] || []
+      }))
+      
+      return NextResponse.json({
+        success: true,
+        data: ordersWithItems,
+        count: ordersWithItems.length
+      })
+    }
+    
+    // Admin access - requires authentication
     const isAuthenticated = await isApiAuthenticated()
     if (!isAuthenticated) {
       return authErrorResponse()
     }
-
-    const searchParams = request.nextUrl.searchParams
-    const status = searchParams.get('status')
-    const customerId = searchParams.get('customerId')
     
     // SMART: Fetch orders AND items in PARALLEL (2 queries, not N+1)
     const [allOrders, allItems] = await Promise.all([
